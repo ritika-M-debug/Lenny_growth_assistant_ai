@@ -1,0 +1,34 @@
+# Version control
+.git
+.gitignore
+
+# Python environments & caches
+**/__pycache__/
+**/*.py[cod]
+*$py.class
+**/.venv/
+**/venv/
+**/env/
+**/.pytest_cache/
+**/.coverage
+htmlcov/
+
+# Node environments & caches
+**/node_modules/
+**/dist/
+npm-debug.log*
+yarn-debug.log*
+
+# Secrets & local environment files
+**/.env
+**/.env.*
+!**/.env.example
+
+# IDE & OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Large agent logs
+agent_transcripts/
