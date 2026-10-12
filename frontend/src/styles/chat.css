@@ -105,6 +105,32 @@
   border-color: var(--border-color);
 }
 
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--text-primary);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.theme-toggle-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
 .artifact-toggle-btn {
   display: flex;
   align-items: center;
@@ -146,7 +172,7 @@
 /* Sidebar Styling */
 .sidebar {
   width: 280px;
-  background: #0d1322;
+  background: var(--bg-sidebar);
   border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
@@ -163,8 +189,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border-subtle);
 }
+
 
 .sidebar-brand {
   display: flex;
@@ -270,8 +297,9 @@
 }
 
 .history-item-wrapper:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(99, 102, 241, 0.09);
 }
+
 
 .history-item-wrapper.active {
   background: rgba(99, 102, 241, 0.15);
@@ -377,8 +405,9 @@
 
 .sidebar-footer {
   padding: 1rem 1.25rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--border-subtle);
 }
+
 
 .system-info {
   display: flex;
@@ -480,9 +509,10 @@
 .prompt-card:hover {
   transform: translateY(-2px);
   border-color: rgba(99, 102, 241, 0.5);
-  background: rgba(31, 41, 55, 0.8);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-lg);
 }
+
 
 .card-header {
   display: flex;
@@ -644,20 +674,25 @@
   border-bottom-right-radius: 2px;
 }
 
+.user-row .message-text * {
+  color: #ffffff !important;
+}
+
 .assistant-row .message-text {
-  background: var(--bg-secondary);
+  background: var(--bg-assistant-bubble);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
   border-bottom-left-radius: 2px;
 }
 
 .citations-box {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--citation-bg);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 0.65rem 0.85rem;
   font-size: 0.78rem;
 }
+
 
 .citations-header {
   display: flex;
@@ -744,12 +779,13 @@
 /* Input Area */
 .chat-input-wrapper {
   padding: 1rem 1.5rem;
-  background: rgba(11, 15, 25, 0.95);
+  background: var(--bg-chat-input);
   border-top: 1px solid var(--border-color);
   max-width: 900px;
   margin: 0 auto;
   width: 100%;
 }
+
 
 .chat-input-form {
   display: flex;
@@ -814,7 +850,7 @@
 .artifact-panel {
   width: 480px;
   max-width: 90vw;
-  background: #0f172a;
+  background: var(--artifact-bg);
   border-left: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
@@ -829,9 +865,10 @@
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
-  background: rgba(15, 23, 42, 0.8);
+  background: var(--bg-secondary);
   backdrop-filter: blur(8px);
 }
+
 
 .panel-title-box {
   display: flex;
@@ -882,8 +919,8 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.45rem 1rem;
-  background: rgba(15, 23, 42, 0.95);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
   overflow-x: auto;
 }
 
@@ -903,7 +940,7 @@
 .artifact-pill {
   font-size: 0.72rem;
   padding: 0.2rem 0.55rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
   border-radius: 6px;
@@ -913,7 +950,7 @@
 }
 
 .artifact-pill:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(99, 102, 241, 0.12);
   color: var(--text-primary);
 }
 
@@ -930,8 +967,9 @@
   justify-content: space-between;
   padding: 0.5rem 1rem;
   border-bottom: 1px solid var(--border-color);
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--bg-secondary);
 }
+
 
 .tabs {
   display: flex;
@@ -1084,26 +1122,26 @@
 }
 
 .artifact-paper {
-  background: rgba(15, 23, 42, 0.8);
+  background: var(--artifact-paper-bg);
   border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 1.25rem;
-  color: #e2e8f0;
+  color: var(--text-primary);
 }
 
 .markdown-render-flow {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  font-size: 0.88rem;
+  gap: 0.65rem;
+  font-size: 0.9rem;
   line-height: 1.6;
 }
 
 .md-h1 {
   font-size: 1.25rem;
   font-weight: 800;
-  color: #ffffff;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 0.4rem;
   margin-top: 0.25rem;
 }
@@ -1111,53 +1149,78 @@
 .md-h2 {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #f1f5f9;
+  color: var(--text-primary);
   margin-top: 0.5rem;
 }
 
 .md-h3 {
   font-size: 0.98rem;
   font-weight: 600;
-  color: #e2e8f0;
+  color: var(--text-primary);
   margin-top: 0.35rem;
 }
 
 .md-h4 {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #cbd5e1;
+  color: var(--text-primary);
 }
 
 .md-p {
-  color: #cbd5e1;
+  color: var(--text-primary);
   margin: 0;
+  line-height: 1.6;
+}
+
+.md-bold {
+  font-weight: 700;
+  color: inherit;
+}
+
+.md-italic {
+  font-style: italic;
+  color: inherit;
 }
 
 .md-blockquote {
-  border-left: 3px solid #6366f1;
-  background: rgba(99, 102, 241, 0.08);
+  border-left: 3px solid var(--blockquote-border);
+  background: var(--blockquote-bg);
   padding: 0.6rem 0.9rem;
   margin: 0.25rem 0;
   border-radius: 0 6px 6px 0;
-  color: #cbd5e1;
+  color: var(--text-secondary);
   font-style: italic;
 }
 
-.md-list {
-  padding-left: 1.2rem;
-  margin: 0;
+.md-ol {
+  padding-left: 1.35rem;
+  margin: 0.35rem 0;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
 }
 
-.md-list-item {
-  color: #cbd5e1;
+.md-ol-item {
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.md-ul, .md-list {
+  padding-left: 1.3rem;
+  margin: 0.35rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.md-ul-item, .md-list-item {
+  color: var(--text-primary);
+  line-height: 1.6;
 }
 
 .md-checklist-item {
   list-style: none;
-  margin-left: -1.2rem;
+  margin-left: -1.3rem;
 }
 
 .checkbox-label {
@@ -1165,7 +1228,7 @@
   align-items: flex-start;
   gap: 0.5rem;
   cursor: pointer;
-  color: #cbd5e1;
+  color: var(--text-primary);
 }
 
 .checkbox-label input[type="checkbox"] {
@@ -1191,31 +1254,32 @@
 }
 
 .md-code-block {
-  background: #020617;
+  background: var(--code-bg);
   padding: 0.85rem;
   margin: 0;
   font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
   font-size: 0.8rem;
-  color: #93c5fd;
+  color: var(--code-text);
   overflow-x: auto;
   line-height: 1.45;
 }
 
 .inline-code {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.25);
   padding: 0.1rem 0.35rem;
   border-radius: 4px;
   font-family: monospace;
-  font-size: 0.82em;
+  font-size: 0.84em;
   color: #ec4899;
 }
 
 .md-divider {
   border: none;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid var(--border-color);
   margin: 0.5rem 0;
 }
+
 
 /* Raw Code Tab View */
 .artifact-code pre {
@@ -1237,8 +1301,9 @@
   border-top: 1px solid var(--border-color);
   font-size: 0.72rem;
   color: var(--text-muted);
-  background: rgba(15, 23, 42, 0.8);
+  background: var(--bg-secondary);
 }
+
 
 .footer-info {
   display: flex;
@@ -1301,12 +1366,13 @@
 }
 
 .citation-card {
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  background: var(--citation-bg);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 0.6rem 0.8rem;
   font-size: 0.8rem;
 }
+
 
 .citation-card-header {
   display: flex;

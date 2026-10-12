@@ -8,6 +8,33 @@ const TOPIC_CATEGORIES = [
   { id: 'pmf', name: 'Product-Market Fit', icon: '🔄' }
 ];
 
+function formatConversationDateTime(dateValue) {
+  if (!dateValue) return '';
+  try {
+    const d = new Date(dateValue);
+    if (isNaN(d.getTime())) return '';
+    const now = new Date();
+    const isToday = d.toDateString() === now.toDateString();
+    const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const yesterday = new Date();
+    yesterday.setDate(now.getDate() - 1);
+    const isYesterday = d.toDateString() === yesterday.toDateString();
+
+    if (isToday) {
+      return `Today, ${timeStr}`;
+    } else if (isYesterday) {
+      return `Yesterday, ${timeStr}`;
+    } else {
+      const dateStr = d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      return `${dateStr}, ${timeStr}`;
+    }
+  } catch {
+    return '';
+  }
+}
+
+
 export default function Sidebar({
   isOpen,
   onClose,
@@ -70,8 +97,9 @@ export default function Sidebar({
                     <div className="item-details">
                       <span className="item-title">{chat.title}</span>
                       <span className="item-meta">
-                        {new Date(chat.updatedAt || chat.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {formatConversationDateTime(chat.updatedAt || chat.updated_at || chat.createdAt || chat.created_at)}
                       </span>
+
                     </div>
                   </button>
 

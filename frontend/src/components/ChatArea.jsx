@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Sparkles, User, BookOpen, PanelRight, AlertCircle, RefreshCw } from './Icons';
 import { SUGGESTED_PROMPTS } from '../services/api';
+import MarkdownRenderer from './MarkdownRenderer';
 
 export default function ChatArea({
   messages,
@@ -130,8 +131,9 @@ export default function ChatArea({
                 </div>
 
                 <div className="message-text">
-                  <p className="text-body">{msg.text}</p>
+                  <MarkdownRenderer content={msg.text} />
                 </div>
+
 
                 {/* Grounded Sources & Citations Area */}
                 {msg.citations && msg.citations.length > 0 ? (

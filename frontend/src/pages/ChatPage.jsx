@@ -15,7 +15,7 @@ import {
   fetchConversationArtifacts
 } from '../services/api';
 
-export default function ChatPage() {
+export default function ChatPage({ theme, onToggleTheme }) {
   const [conversations, setConversations] = useState([]);
   const [activeChatId, setActiveChatId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -235,7 +235,10 @@ export default function ChatPage() {
         dbStatus={dbStatus}
         llmStatus={llmStatus}
         onRefreshHealth={refreshHealth}
+        theme={theme}
+        onToggleTheme={onToggleTheme}
       />
+
 
       <div className="chat-body-layout">
         {/* Left Sidebar */}

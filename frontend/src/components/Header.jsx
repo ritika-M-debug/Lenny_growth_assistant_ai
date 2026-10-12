@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, PanelRight, Sparkles, Database, Server, RefreshCw } from './Icons';
+import { Menu, PanelRight, Sparkles, Database, Server, RefreshCw, Sun, Moon } from './Icons';
 
 export default function Header({
   isSidebarOpen,
@@ -10,8 +10,11 @@ export default function Header({
   backendStatus,
   dbStatus,
   llmStatus,
-  onRefreshHealth
+  onRefreshHealth,
+  theme = 'dark',
+  onToggleTheme
 }) {
+
   return (
     <header className="chat-header">
       <div className="header-left">
@@ -86,6 +89,17 @@ export default function Header({
           </button>
         </div>
 
+        {/* Light / Dark Theme Toggle Button */}
+        <button
+          className="theme-toggle-btn"
+          onClick={onToggleTheme}
+          title={theme === 'dark' ? "Switch to Light Theme" : "Switch to Dark Theme"}
+          aria-label={theme === 'dark' ? "Switch to Light Theme" : "Switch to Dark Theme"}
+        >
+          {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+          <span className="theme-toggle-label">{theme === 'dark' ? 'Light' : 'Dark'}</span>
+        </button>
+
         {/* Artifact Panel Toggle Button */}
         <button
           className={`artifact-toggle-btn ${isArtifactOpen ? 'active' : ''} ${hasArtifact ? 'has-artifact' : ''}`}
@@ -96,6 +110,7 @@ export default function Header({
           <span className="btn-text">Artifact Studio</span>
           {hasArtifact && <span className="artifact-indicator"></span>}
         </button>
+
       </div>
     </header>
   );
