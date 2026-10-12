@@ -1,13 +1,29 @@
 /**
  * API Service for The Lenny Growth Assistant
  * Communicates with FastAPI backend for persistence in PostgreSQL.
+ * Supports production API URL via VITE_API_URL (with VITE_API_BASE_URL fallback),
+ * and defaults to http://localhost:8000 for local development.
  */
 
-const BACKEND_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const rawApiUrl = (
+  (typeof import.meta !== 'undefined' && import.meta.env && (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL)) ||
+  'http://localhost:8000'
+);
+
+// Normalize base URL by removing any trailing slashes to avoid duplicate slashes
+export const BACKEND_BASE_URL = rawApiUrl.replace(/\/+$/, '');
+
+/**
+ * Builds a clean, fully-qualified API URL without duplicate slashes.
+ */
+export function buildApiUrl(path) {
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `${BACKEND_BASE_URL}${cleanPath}`;
+}
 
 export async function checkBackendHealth() {
   try {
-    const res = await fetch(`${BACKEND_BASE_URL}/health`);
+    const res = await fetch(buildApiUrl('/health'));
     if (res.ok) {
       const data = await res.json();
       return { status: 'healthy', data };
@@ -20,7 +36,7 @@ export async function checkBackendHealth() {
 
 export async function checkDatabaseHealth() {
   try {
-    const res = await fetch(`${BACKEND_BASE_URL}/health/db`);
+    const res = await fetch(buildApiUrl('/health/db'));
     if (res.ok) {
       const data = await res.json();
       return { status: 'connected', data };
@@ -34,7 +50,7 @@ export async function checkDatabaseHealth() {
 
 export async function checkLLMHealth() {
   try {
-    const res = await fetch(`${BACKEND_BASE_URL}/health/llm`);
+    const res = await fetch(buildApiUrl('/health/llm'));
     if (res.ok) {
       const data = await res.json();
       return { status: data.status || 'configured', data };
@@ -50,7 +66,7 @@ export async function checkLLMHealth() {
  */
 export async function fetchConversations() {
   try {
-    const res = await fetch(`${BACKEND_BASE_URL}/api/conversations`);
+    const res = await fetch(buildApiUrl('/api/conversations'));
     if (!res.ok) throw new Error('Failed to load conversations');
     return await res.json();
   } catch (err) {
@@ -64,7 +80,7 @@ export async function fetchConversations() {
  */
 export async function createConversation(title = 'New Conversation') {
   try {
-    const res = await fetch(`${BACKEND_BASE_URL}/api/conversations`, {
+    const res = await fetch(buildApiUrl('/api/conversations'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title })
@@ -82,7 +98,7 @@ export async function createConversation(title = 'New Conversation') {
  */
 export async function fetchConversationDetail(conversationId) {
   try {
-    const res = await fetch(`${BACKEND_BASE_URL}/api/conversations/${conversationId}`);
+    const res = await fetch(buildApiUrl(`/api/conversations/${conversationId}`));
     if (!res.ok) throw new Error('Conversation not found');
     return await res.json();
   } catch (err) {
@@ -96,7 +112,7 @@ export async function fetchConversationDetail(conversationId) {
  */
 export async function sendMessageToConversation(conversationId, content) {
   try {
-    const res = await fetch(`${BACKEND_BASE_URL}/api/conversations/${conversationId}/messages`, {
+    const res = await fetch(buildApiUrl(`/api/conversations/${conversationId}/messages`), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content })
@@ -114,7 +130,7 @@ export async function sendMessageToConversation(conversationId, content) {
  */
 export async function deleteConversation(conversationId) {
   try {
-    const res = await fetch(`${BACKEND_BASE_URL}/api/conversations/${conversationId}`, {
+    const res = await fetch(buildApiUrl(`/api/conversations/${conversationId}`), {
       method: 'DELETE'
     });
     if (!res.ok) throw new Error('Failed to delete conversation');
@@ -164,7 +180,7 @@ export const SUGGESTED_PROMPTS = [
  */
 export async function fetchConversationArtifacts(conversationId) {
   try {
-    const res = await fetch(`${BACKEND_BASE_URL}/api/conversations/${conversationId}/artifacts`);
+    const res = await fetch(buildApiUrl(`/api/conversations/${conversationId}/artifacts`));
     if (!res.ok) throw new Error('Failed to load artifacts');
     return await res.json();
   } catch (err) {
@@ -178,7 +194,7 @@ export async function fetchConversationArtifacts(conversationId) {
  */
 export async function fetchArtifactDetail(artifactId) {
   try {
-    const res = await fetch(`${BACKEND_BASE_URL}/api/artifacts/${artifactId}`);
+    const res = await fetch(buildApiUrl(`/api/artifacts/${artifactId}`));
     if (!res.ok) throw new Error('Artifact not found');
     return await res.json();
   } catch (err) {
@@ -192,7 +208,7 @@ export async function fetchArtifactDetail(artifactId) {
  */
 export async function createArtifact(conversationId, artifactData) {
   try {
-    const res = await fetch(`${BACKEND_BASE_URL}/api/conversations/${conversationId}/artifacts`, {
+    const res = await fetch(buildApiUrl(`/api/conversations/${conversationId}/artifacts`), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(artifactData)
@@ -210,7 +226,7 @@ export async function createArtifact(conversationId, artifactData) {
  */
 export async function deleteArtifact(artifactId) {
   try {
-    const res = await fetch(`${BACKEND_BASE_URL}/api/artifacts/${artifactId}`, {
+    const res = await fetch(buildApiUrl(`/api/artifacts/${artifactId}`), {
       method: 'DELETE'
     });
     if (!res.ok) throw new Error('Failed to delete artifact');
@@ -220,3 +236,4 @@ export async function deleteArtifact(artifactId) {
     throw err;
   }
 }
+
