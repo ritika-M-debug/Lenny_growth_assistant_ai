@@ -93,9 +93,17 @@ class Settings(BaseSettings):
     def effective_anthropic_model(self) -> str:
         return self.ANTHROPIC_MODEL or self.DEFAULT_CLOUD_MODEL or "claude-3-5-sonnet-20241022"
 
-    # RAG Retrieval Settings
+    # RAG Retrieval & Embedding Settings
     RAG_TOP_K: int = 5
     RAG_MIN_SIMILARITY: float = 0.0
+    # Embedding Provider ("hash" for ultra-low memory <1MB, "sentence-transformers", "ollama", "openai")
+    EMBEDDING_PROVIDER: str = "hash"
+
+    # Database Pool Settings (Tuned for low-memory containers such as Render Free 512MB)
+    DB_POOL_SIZE: int = 5
+    DB_MAX_OVERFLOW: int = 5
+    DB_POOL_TIMEOUT: int = 30
+    DB_POOL_RECYCLE: int = 1800
 
     model_config = ConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 

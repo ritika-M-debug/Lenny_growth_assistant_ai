@@ -136,7 +136,14 @@ def search_similar_chunks(
     Utilizes vectorized NumPy computations for fast execution across large collections.
     Supports guest/episode filtering and keyword/topic score boosting.
     """
-    query = db.query(KnowledgeChunk)
+    query = db.query(
+        KnowledgeChunk.id,
+        KnowledgeChunk.document_id,
+        KnowledgeChunk.chunk_index,
+        KnowledgeChunk.content,
+        KnowledgeChunk.embedding,
+        KnowledgeChunk.metadata_json,
+    )
     chunks = query.all()
     if not chunks:
         return []

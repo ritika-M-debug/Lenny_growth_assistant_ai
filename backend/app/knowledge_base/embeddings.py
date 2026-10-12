@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Optional, List, Dict, Any
 import math
 import hashlib
 import os
@@ -65,25 +66,43 @@ class DeterministicHashEmbeddingProvider(BaseEmbeddingProvider):
         return vec
 
 
+_cached_hash_provider: Optional["DeterministicHashEmbeddingProvider"] = None
+
+
+def get_hash_provider() -> "DeterministicHashEmbeddingProvider":
+    """Returns singleton instance of DeterministicHashEmbeddingProvider to save memory."""
+    global _cached_hash_provider
+    if _cached_hash_provider is None:
+        _cached_hash_provider = DeterministicHashEmbeddingProvider()
+    return _cached_hash_provider
+
+
 class SentenceTransformersProvider(BaseEmbeddingProvider):
     """
     Local high-quality semantic embedding provider using SentenceTransformers (e.g. all-MiniLM-L6-v2).
+    Uses class-level singleton model caching to avoid reloading multi-hundred-megabyte PyTorch models into memory.
     """
+    _cached_model = None
+    _cached_dim = None
 
     def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
-        try:
-            from sentence_transformers import SentenceTransformer
+        if SentenceTransformersProvider._cached_model is None:
             try:
-                self.model = SentenceTransformer(model_name, local_files_only=True)
-            except Exception:
-                self.model = SentenceTransformer(model_name)
-            if hasattr(self.model, "get_embedding_dimension"):
-                self._dim = self.model.get_embedding_dimension()
-            else:
-                self._dim = self.model.get_sentence_embedding_dimension()
+                from sentence_transformers import SentenceTransformer
+                try:
+                    SentenceTransformersProvider._cached_model = SentenceTransformer(model_name, local_files_only=True)
+                except Exception:
+                    SentenceTransformersProvider._cached_model = SentenceTransformer(model_name)
+                if hasattr(SentenceTransformersProvider._cached_model, "get_embedding_dimension"):
+                    SentenceTransformersProvider._cached_dim = SentenceTransformersProvider._cached_model.get_embedding_dimension()
+                else:
+                    SentenceTransformersProvider._cached_dim = SentenceTransformersProvider._cached_model.get_sentence_embedding_dimension()
 
-        except Exception as e:
-            raise RuntimeError(f"Failed to initialize SentenceTransformer '{model_name}': {e}")
+            except Exception as e:
+                raise RuntimeError(f"Failed to initialize SentenceTransformer '{model_name}': {e}")
+
+        self.model = SentenceTransformersProvider._cached_model
+        self._dim = SentenceTransformersProvider._cached_dim
 
     @property
     def dimension(self) -> int:
@@ -157,15 +176,22 @@ def get_embedding_provider(provider_type: str = None) -> BaseEmbeddingProvider:
     """
     Factory function for instantiating the configured embedding provider.
     Priority order:
-    1. Specified provider_type parameter.
-    2. Environment variable EMBEDDING_PROVIDER.
-    3. Auto-detect SentenceTransformers if installed.
-    4. Fallback to DeterministicHashEmbeddingProvider for guaranteed zero-dependency local support.
+    1. Explicit provider_type parameter.
+    2. Environment variable EMBEDDING_PROVIDER or settings.EMBEDDING_PROVIDER.
+    3. If LLM_PROVIDER is mock (or EMBEDDING_PROVIDER is unset), defaults to DeterministicHashEmbeddingProvider
+       to maintain low memory usage (<50MB vs ~500MB with PyTorch) on Render 512MB tier.
     """
-    provider_name = (provider_type or os.getenv("EMBEDDING_PROVIDER") or "sentence-transformers").lower()
+    active_llm = (os.getenv("LLM_PROVIDER") or getattr(settings, "LLM_PROVIDER", "ollama")).strip().lower()
+
+    # When running with mock LLM (such as in free tier or tests), avoid loading heavy neural networks
+    if active_llm == "mock" and not provider_type and not os.getenv("EMBEDDING_PROVIDER"):
+        return get_hash_provider()
+
+    raw_choice = provider_type or os.getenv("EMBEDDING_PROVIDER") or getattr(settings, "EMBEDDING_PROVIDER", "hash")
+    provider_name = (raw_choice or "hash").strip().lower()
 
     if provider_name in ["hash", "local", "deterministic"]:
-        return DeterministicHashEmbeddingProvider()
+        return get_hash_provider()
     elif provider_name == "ollama":
         return OllamaEmbeddingProvider()
     elif provider_name in ["openai", "cloud"]:
@@ -175,7 +201,7 @@ def get_embedding_provider(provider_type: str = None) -> BaseEmbeddingProvider:
             return SentenceTransformersProvider()
         except Exception as e:
             print(f"Notice: SentenceTransformers fallback to DeterministicHashEmbeddingProvider ({e})")
-            return DeterministicHashEmbeddingProvider()
+            return get_hash_provider()
 
-    # Default fallback
-    return DeterministicHashEmbeddingProvider()
+    # Safe default fallback
+    return get_hash_provider()
