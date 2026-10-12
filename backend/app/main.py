@@ -14,15 +14,16 @@ app = FastAPI(
     description="Backend API for The Lenny Growth Assistant - Conversational AI for Product & Growth"
 )
 
-# Setup CORS middleware allowing any localhost / 127.0.0.1 port (5173, 5174, etc.)
+# Setup CORS middleware allowing Vercel production frontend and local development
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
-    allow_origin_regex=r"http://(localhost|127\.0\.0\.1):\d+",
+    allow_origin_regex=r"https://.*\.vercel\.app|http://(localhost|127\.0\.0\.1):\d+",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.on_event("startup")
 def on_startup():

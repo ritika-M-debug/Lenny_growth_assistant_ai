@@ -37,16 +37,43 @@ class Settings(BaseSettings):
         return f"postgresql+psycopg2://{self.POSTGRES_USER}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
     # CORS Allowed Origins (Comma-separated string or list supported)
-    ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:5174,http://localhost:5175,http://127.0.0.1:5173,http://127.0.0.1:5174,http://127.0.0.1:5175"
+    ALLOWED_ORIGINS: str = (
+        "https://lenny-growth-assistant-ai.vercel.app,"
+        "http://localhost:5173,http://localhost:5174,http://localhost:5175,"
+        "http://127.0.0.1:5173,http://127.0.0.1:5174,http://127.0.0.1:5175"
+    )
 
     @computed_field
     @property
     def cors_origins(self) -> list[str]:
-        if not self.ALLOWED_ORIGINS:
-            return ["*"]
-        if isinstance(self.ALLOWED_ORIGINS, list):
-            return self.ALLOWED_ORIGINS
-        return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",") if origin.strip()]
+        raw = self.ALLOWED_ORIGINS
+        origins_list: list[str] = []
+        if isinstance(raw, (list, tuple)):
+            raw_items = list(raw)
+        elif isinstance(raw, str):
+            raw_items = raw.split(",")
+        else:
+            raw_items = []
+
+        for item in raw_items:
+            if not isinstance(item, str):
+                continue
+            # Strip whitespace, surrounding quotes, and trailing slashes
+            cleaned = item.strip().strip("\"'").rstrip("/")
+            if cleaned and cleaned not in origins_list:
+                origins_list.append(cleaned)
+
+        # Always guarantee core production and local development origins are included
+        always_allowed = [
+            "https://lenny-growth-assistant-ai.vercel.app",
+            "http://localhost:5173",
+        ]
+        for origin in always_allowed:
+            if origin not in origins_list:
+                origins_list.append(origin)
+
+        return origins_list
+
 
     # LLM Settings & Provider Configuration
     LLM_PROVIDER: str = "ollama"
